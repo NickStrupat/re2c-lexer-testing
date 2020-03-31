@@ -5,3 +5,5 @@ out/
 
 /lexer.cpp
 /CMakeSettings.json
+/CMakeFiles
+/CMakeCache.txt
