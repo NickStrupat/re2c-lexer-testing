@@ -11,5 +11,8 @@ int main() {
 	cout << tokenTypeString.at(lex("0xdeadbeef")) << endl;
 	cout << tokenTypeString.at(lex("0b1001_0101u8")) << endl;
 	cout << tokenTypeString.at(lex("3.1415_e69_f80")) << endl;
+	cout << endl;
+	cout << tokenTypeString.at(lex("0b1.01011.1000010000")) << endl;
+	cout << tokenTypeString.at(lex("\t")) << endl;
 	return 0;
 }

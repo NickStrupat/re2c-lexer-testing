@@ -8,9 +8,10 @@
 #include <map>
 #include <string>
 
-enum TokenType
+enum class TokenType
 {
 	Invalid = -1,
+	Whitespace,
 	NewLine,
 	Use,
 	Namespace,
@@ -22,23 +23,27 @@ enum TokenType
 	HexadecimalIntegerLiteral,
 	BinaryIntegerLiteral,
 	DecimalRealLiteral,
+	BinaryRealHalfLiteral,
 	Identifier
 };
 
+#define TOKEN(x) { TokenType::x, #x }
 std::map<TokenType, std::string const> const tokenTypeString {
-		{ TokenType::Invalid, "Invalid" },
-		{ TokenType::NewLine, "NewLine" },
-		{ TokenType::Use, "Use" },
-		{ TokenType::Namespace, "Namespace" },
-		{ TokenType::Type, "Type" },
-		{ TokenType::True, "True" },
-		{ TokenType::False, "False" },
-		{ TokenType::Arrow, "Arrow" },
-		{ TokenType::DecimalIntegerLiteral, "DecimalIntegerLiteral" },
-		{ TokenType::HexadecimalIntegerLiteral, "HexadecimalIntegerLiteral" },
-		{ TokenType::BinaryIntegerLiteral, "BinaryIntegerLiteral" },
-		{ TokenType::DecimalRealLiteral, "DecimalRealLiteral" },
-		{ TokenType::Identifier, "Identifier" },
+	TOKEN(Invalid),
+	TOKEN(Whitespace),
+	TOKEN(NewLine),
+	TOKEN(Use),
+	TOKEN(Namespace),
+	TOKEN(Type),
+	TOKEN(True),
+	TOKEN(False),
+	TOKEN(Arrow),
+	TOKEN(DecimalIntegerLiteral),
+	TOKEN(HexadecimalIntegerLiteral),
+	TOKEN(BinaryIntegerLiteral),
+	TOKEN(DecimalRealLiteral),
+	TOKEN(BinaryRealHalfLiteral),
+	TOKEN(Identifier),
 };
 
 struct Token {
