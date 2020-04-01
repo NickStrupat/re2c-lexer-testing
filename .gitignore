@@ -4,6 +4,7 @@ cmake-build-debug/
 out/
 
 /lexer.cpp
-/CMakeSettings.json
-/CMakeFiles
-/CMakeCache.txt
+/CMake*
+/!CmakeLists.txt
+/Make*
+/re2c*
