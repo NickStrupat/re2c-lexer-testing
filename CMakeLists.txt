@@ -3,7 +3,7 @@ project(re2c_lexer_testing)
 
 set(CMAKE_CXX_STANDARD 17)
 
-if (LINUX)
+if (UNIX AND NOT APPLE)
 	set(re2cPath "linux/re2c")
 endif()
 if (APPLE)

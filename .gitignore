@@ -5,6 +5,7 @@ out/
 
 /lexer.cpp
 /CMake*
+/cmake*
 /!CmakeLists.txt
 /Make*
 /re2c*
