@@ -1,56 +1,88 @@
-//
-// Created by Nick on 3/26/2020.
-//
-
 #ifndef RE2C_LEXER_TESTING_LEXER_HPP
 #define RE2C_LEXER_TESTING_LEXER_HPP
 
+#include <cstdint>
 #include <map>
 #include <string>
+#include <string_view>
 
-enum class TokenType
+#define MAGIC_ENUM_RANGE_MIN 0
+#define MAGIC_ENUM_RANGE_MAX 256
+#include "magic_enum.hpp"
+
+enum TokenType : std::uint8_t
 {
-	Invalid = -1,
-	Whitespace,
-	NewLine,
-	Use,
-	Namespace,
-	Type,
-	True,
-	False,
-	Arrow,
+	BinaryRealHalfLiteral,
 	DecimalIntegerLiteral,
 	HexadecimalIntegerLiteral,
 	BinaryIntegerLiteral,
 	DecimalRealLiteral,
-	BinaryRealHalfLiteral,
-	Identifier
-};
 
-#define TOKEN(x) { TokenType::x, #x }
-std::map<TokenType, std::string const> const tokenTypeString {
-	TOKEN(Invalid),
-	TOKEN(Whitespace),
-	TOKEN(NewLine),
-	TOKEN(Use),
-	TOKEN(Namespace),
-	TOKEN(Type),
-	TOKEN(True),
-	TOKEN(False),
-	TOKEN(Arrow),
-	TOKEN(DecimalIntegerLiteral),
-	TOKEN(HexadecimalIntegerLiteral),
-	TOKEN(BinaryIntegerLiteral),
-	TOKEN(DecimalRealLiteral),
-	TOKEN(BinaryRealHalfLiteral),
-	TOKEN(Identifier),
+	NewLine,
+	Identifier,
+	Whitespace,
+	Use,
+	Namespace,
+	Type,
+	Enum,
+	Struct,
+	Interface,
+	Trait,
+	Delegate,
+	Field,
+	Prop,
+	Func,
+	Local,
+	True,
+	False,
+	Arrow,
+	LessOrEqual,
+	GreaterOrEqual,
+	Range,
+	InRange,
+	NotInRange,
+	LessThan,
+	GreaterThan,
+	NotEqual,
+	Equal,
+	And,
+	Or,
+	Power,
+	Minus,
+	Not,
+	Multiply,
+	Divide,
+	Modulo,
+	Plus,
+	Octothorp,
+	Tilde,
+	Dot,
+	EqualsSign,
+	LeftParenthesis,
+	RightParenthesis,
+	LeftBrace,
+	RightBrace,
+	LeftBracket,
+	RightBracket,
+	SemiColon,
+	Comma,
+
+	Eof,
+	Invalid,
 };
 
 struct Token {
-	TokenType type;
-	char const * end;
+	TokenType const type;
+	std::string_view const sv;
 };
 
-TokenType lex(char const *YYCURSOR);
+Token lex(string_view sv);
 
-#endif //RE2C_LEXER_TESTING_LEXER_HPP
+class TokenIterator {
+	string_view sv;
+public:
+	TokenIterator(string_view sv);
+	Token getNextToken();
+};
+
+#endif
