@@ -1,8 +1,8 @@
 /*!include:re2c "unicode.re.txt" */
 /*!re2c
-	whitespace = Zs | '\x09' | '\x0b' | '\x0c';
-
 	newLine = '\r\n' | '\r' | '\n' | '\x85' | '\u2028' | '\u2029';
+	whitespace = Zs | '\x0b' | '\x0c'; //| '\x09' (horizontal tab)
+	tab = '\t';
 
 	sign = [+-];
 	hexadecimalDigit = [0-9a-fA-F];
@@ -75,9 +75,15 @@ using namespace std;
 
 #include "lexer.hpp"
 
+//string Token::toString() const {
+//	stringstream ss;
+//	ss << (&this->sv[0] - &sv[0]) << "\t" << token.sv.length() << "\t" << "\t" << setw(30) << left << enum_name(token.type) << (token.sv.find_first_of('\n') == -1 ? token.sv : "");
+//	return ss.str();
+//}
+
 TokenIterator::TokenIterator(string_view sv) : sv(sv) {}
 
-Token TokenIterator::getNextToken() {
+Token TokenIterator::next() {
 	auto token = lex(sv);
 	sv = sv.substr(token.sv.length());
 	return token;
@@ -100,8 +106,11 @@ Token lex(std::string_view sv) {
 	hexadecimalIntegerLiteral { RETURN_TOKEN(HexadecimalIntegerLiteral); }
 	binaryIntegerLiteral      { RETURN_TOKEN(BinaryIntegerLiteral     ); }
 	decimalRealLiteral        { RETURN_TOKEN(DecimalRealLiteral       ); }
+
 	newLine                   { RETURN_TOKEN(NewLine                  ); }
 	whitespace                { RETURN_TOKEN(Whitespace               ); }
+	tab                       { RETURN_TOKEN(Tab                      ); }
+
 	"use"                     { RETURN_TOKEN(Use                      ); }
 	"namespace"               { RETURN_TOKEN(Namespace                ); }
 	"type"                    { RETURN_TOKEN(Type                     ); }
@@ -116,6 +125,11 @@ Token lex(std::string_view sv) {
 	"local"                   { RETURN_TOKEN(Local                    ); }
 	"true"                    { RETURN_TOKEN(True                     ); }
 	"false"                   { RETURN_TOKEN(False                    ); }
+
+	"if"                      { RETURN_TOKEN(If                       ); }
+	"else"                    { RETURN_TOKEN(Else                     ); }
+	"match"                   { RETURN_TOKEN(Match                    ); }
+
 	"->"                      { RETURN_TOKEN(Arrow                    ); }
 	"<="                      { RETURN_TOKEN(LessOrEqual              ); }
 	">="                      { RETURN_TOKEN(GreaterOrEqual           ); }
@@ -126,11 +140,19 @@ Token lex(std::string_view sv) {
 	">"                       { RETURN_TOKEN(GreaterThan              ); }
 	"!="                      { RETURN_TOKEN(NotEqual                 ); }
 	"=="                      { RETURN_TOKEN(Equal                    ); }
+
 	"and"                     { RETURN_TOKEN(And                      ); }
 	"or"                      { RETURN_TOKEN(Or                       ); }
+	"nand"                    { RETURN_TOKEN(Nand                     ); }
+	"nor"                     { RETURN_TOKEN(Nor                      ); }
+	"xor"                     { RETURN_TOKEN(Nor                      ); }
+	"xnor"                    { RETURN_TOKEN(Xnor                     ); }
+	"not"                     { RETURN_TOKEN(Not                      ); }
+	"is"                      { RETURN_TOKEN(Is                       ); }
+	"isnt"                    { RETURN_TOKEN(Isnt                     ); }
+
 	"**"                      { RETURN_TOKEN(Power                    ); }
 	"-"                       { RETURN_TOKEN(Minus                    ); }
-	"not"                     { RETURN_TOKEN(Not                      ); }
 	"*"                       { RETURN_TOKEN(Multiply                 ); }
 	"/"                       { RETURN_TOKEN(Divide                   ); }
 	"%"                       { RETURN_TOKEN(Modulo                   ); }
@@ -147,6 +169,7 @@ Token lex(std::string_view sv) {
 	"]"                       { RETURN_TOKEN(RightBracket             ); }
 	";"                       { RETURN_TOKEN(SemiColon                ); }
 	","                       { RETURN_TOKEN(Comma                    ); }
+
 	identifier                { RETURN_TOKEN(Identifier               ); }
 	*                         { RETURN_TOKEN(Invalid                  ); }
 

@@ -19,8 +19,11 @@ enum TokenType : std::uint8_t
 	DecimalRealLiteral,
 
 	NewLine,
-	Identifier,
 	Whitespace,
+	Tab,
+
+	Identifier,
+
 	Use,
 	Namespace,
 	Type,
@@ -35,6 +38,11 @@ enum TokenType : std::uint8_t
 	Local,
 	True,
 	False,
+
+	If,
+	Else,
+	Match,
+
 	Arrow,
 	LessOrEqual,
 	GreaterOrEqual,
@@ -45,11 +53,19 @@ enum TokenType : std::uint8_t
 	GreaterThan,
 	NotEqual,
 	Equal,
+
 	And,
 	Or,
+	Nand,
+	Nor,
+	Xor,
+	Xnor,
+	Not,
+	Is,
+	Isnt,
+
 	Power,
 	Minus,
-	Not,
 	Multiply,
 	Divide,
 	Modulo,
@@ -72,17 +88,19 @@ enum TokenType : std::uint8_t
 };
 
 struct Token {
-	TokenType const type;
-	std::string_view const sv;
+	TokenType type;
+	std::string_view sv;
+
+	//std::string toString() const;
 };
 
-Token lex(string_view sv);
+Token lex(std::string_view sv);
 
 class TokenIterator {
-	string_view sv;
+	std::string_view sv;
 public:
-	TokenIterator(string_view sv);
-	Token getNextToken();
+	TokenIterator(std::string_view sv);
+	Token next();
 };
 
 #endif
