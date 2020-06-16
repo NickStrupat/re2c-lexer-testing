@@ -1,11 +1,15 @@
 .idea/
 .vs/
 cmake-build-debug/
-out/
+/out/
 
 /lexer.cpp
+/unescape.cpp
+/Utf8UnicodeEscapeSequenceIterator.cpp
+
 /CMake*
 /cmake*
-/!CmakeLists.txt
 /Make*
 /re2c*
+
+!/CMakeLists.txt
