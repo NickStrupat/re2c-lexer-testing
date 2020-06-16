@@ -25,7 +25,7 @@ enum TokenType : std::uint8_t
 	Identifier,
 
 	Use,
-	Namespace,
+	Qualifier,
 	Type,
 	Enum,
 	Struct,

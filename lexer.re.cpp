@@ -112,7 +112,7 @@ Token lex(std::string_view sv) {
 	tab                       { RETURN_TOKEN(Tab                      ); }
 
 	"use"                     { RETURN_TOKEN(Use                      ); }
-	"namespace"               { RETURN_TOKEN(Namespace                ); }
+	"qual"                    { RETURN_TOKEN(Qualifier                ); }
 	"type"                    { RETURN_TOKEN(Type                     ); }
 	"enum"                    { RETURN_TOKEN(Enum                     ); }
 	"struct"                  { RETURN_TOKEN(Struct                   ); }
