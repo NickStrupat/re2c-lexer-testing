@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <map>
+#include <queue>
 #include <string>
 #include <string_view>
 
@@ -18,14 +19,16 @@ enum TokenType : std::uint8_t
 	BinaryIntegerLiteral,
 	DecimalRealLiteral,
 
-	NewLine,
+	Newline,
 	Whitespace,
 	Tab,
+	Indent,
+	Dedent,
 
 	Identifier,
 
 	Use,
-	Qualifier,
+	Namespace,
 	Type,
 	Enum,
 	Struct,
@@ -95,12 +98,5 @@ struct Token {
 };
 
 Token lex(std::string_view sv);
-
-class TokenIterator {
-	std::string_view sv;
-public:
-	TokenIterator(std::string_view sv);
-	Token next();
-};
 
 #endif
