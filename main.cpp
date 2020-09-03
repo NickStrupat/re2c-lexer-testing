@@ -8,6 +8,7 @@ using namespace std;
 
 #include "lexer.hpp"
 #include "TokenIterator.hpp"
+#include "DentedTokenIterator.hpp"
 
 #include "magic_enum.hpp"
 using namespace magic_enum;
@@ -148,13 +149,14 @@ qual System
 )cova");
 	cout << sv << endl << endl;
 
-	TokenIterator it(sv);
+	DentedTokenIterator<Newline, Tab, Indent, Dedent, Eof> it(sv);
 	for (auto token = it.next(); token.type != Eof; token = it.next()) {
 		auto const position = token.sv.data() - sv.data();
 		auto const length = token.sv.length();
 		auto const name = enum_name(token.type);
 		auto const text = token.sv.find_first_of('\n') == -1 ? token.sv : "";
-		cout << position << "\t" << length << "\t" << "\t" << setw(30) << left << name << text << endl;
+		//cout << position << "\t" << length << "\t" << "\t" << setw(30) << left << name << text << endl;
+		cout << (token.sv.length() == 0 ? enum_name(token.type) : token.sv);
 	}
 
 	/*Parser parser(it);
