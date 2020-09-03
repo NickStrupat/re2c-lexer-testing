@@ -1,6 +1,8 @@
+#include "lexer.hpp"
+
 /*!include:re2c "unicode.re.txt" */
 /*!re2c
-	newLine = '\r\n' | '\r' | '\n' | '\x85' | '\u2028' | '\u2029';
+	newline = '\r\n' | '\r' | '\n' | '\x85' | '\u2028' | '\u2029';
 	whitespace = Zs | '\x0b' | '\x0c'; //| '\x09' (horizontal tab)
 	tab = '\t';
 
@@ -73,29 +75,13 @@
 #include <string_view>
 using namespace std;
 
-#include "lexer.hpp"
-
-//string Token::toString() const {
-//	stringstream ss;
-//	ss << (&this->sv[0] - &sv[0]) << "\t" << token.sv.length() << "\t" << "\t" << setw(30) << left << enum_name(token.type) << (token.sv.find_first_of('\n') == -1 ? token.sv : "");
-//	return ss.str();
-//}
-
-TokenIterator::TokenIterator(string_view sv) : sv(sv) {}
-
-Token TokenIterator::next() {
-	auto token = lex(sv);
-	sv = sv.substr(token.sv.length());
-	return token;
-}
-
-Token lex(std::string_view sv) {
+Token lex(string_view sv) {
 	if (sv.empty())
 		return { TokenType::Eof, {} };
-	auto YYCURSOR = &sv[0];
+	auto YYCURSOR = sv.data();
 	decltype(YYCURSOR) YYMARKER;
 
-#define RETURN_TOKEN(tokenName) return { TokenType::tokenName, { &sv[0], static_cast<size_t>(YYCURSOR - &sv[0]) } }
+#define RETURN_TOKEN(tokenName) return { TokenType::tokenName, { sv.data(), static_cast<size_t>(YYCURSOR - sv.data()) } }
 	/*!re2c
 	re2c:define:YYCTYPE = 'char unsigned';
 	re2c:yyfill:enable = 0;
@@ -107,12 +93,12 @@ Token lex(std::string_view sv) {
 	binaryIntegerLiteral      { RETURN_TOKEN(BinaryIntegerLiteral     ); }
 	decimalRealLiteral        { RETURN_TOKEN(DecimalRealLiteral       ); }
 
-	newLine                   { RETURN_TOKEN(NewLine                  ); }
+	newline                   { RETURN_TOKEN(Newline                  ); }
 	whitespace                { RETURN_TOKEN(Whitespace               ); }
 	tab                       { RETURN_TOKEN(Tab                      ); }
 
 	"use"                     { RETURN_TOKEN(Use                      ); }
-	"qual"                    { RETURN_TOKEN(Qualifier                ); }
+	"namespace"               { RETURN_TOKEN(Namespace                ); }
 	"type"                    { RETURN_TOKEN(Type                     ); }
 	"enum"                    { RETURN_TOKEN(Enum                     ); }
 	"struct"                  { RETURN_TOKEN(Struct                   ); }
