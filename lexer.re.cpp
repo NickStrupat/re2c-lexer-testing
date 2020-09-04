@@ -77,7 +77,7 @@ using namespace std;
 
 Token lex(string_view sv) {
 	if (sv.empty())
-		return { TokenType::Eof, {} };
+		return { TokenType::Eof, sv };
 	auto YYCURSOR = sv.data();
 	decltype(YYCURSOR) YYMARKER;
 

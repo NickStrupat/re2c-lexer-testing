@@ -2,6 +2,8 @@
 #include <iostream>
 #include <stack>
 #include <string_view>
+#include <unordered_map>
+#include <unordered_set>
 #include <variant>
 #include <vector>
 using namespace std;
@@ -10,22 +12,15 @@ using namespace std;
 #include "TokenIterator.hpp"
 #include "DentedTokenIterator.hpp"
 
+#include "ast/CompilationUnit.hpp"
+
 #include "magic_enum.hpp"
 using namespace magic_enum;
 
-struct Type2 {
-	vector<string> qualifiers;
-	string name;
-};
-
-struct CompilationUnit {
-	vector<Type2> types;
-};
-
 class Parser {
-	TokenIterator it;
+	DentedTokenIterator it;
 	Token current;
-	stack<string_view> qualifiers;
+	queue<string_view> namespaces;
 
 	void nextsym() {
 		current = it.next();
@@ -39,43 +34,42 @@ class Parser {
 		cerr << msg << endl;
 	}
 
-	bool accept(std::initializer_list<TokenType> tokenTypes) {
+	bool accept(std::unordered_set<TokenType> tokenTypes) {
 		Token t;
 		return accept(tokenTypes, t);
 	}
-	bool accept(std::initializer_list<TokenType> tokenTypes, Token& matched) {
-		for (auto tokenType : tokenTypes)
-			if (current.type == tokenType) {
-				matched = current;
-				nextsym();
-				return true;
-			}
+	bool accept(std::unordered_set<TokenType> tokenTypes, Token& matched) {
+		if (tokenTypes.contains(current.type)) {
+			matched = current;
+			nextsym();
+			return true;
+		}
 		return false;
 	}
 
-	bool expect(std::initializer_list<TokenType> tokenTypes) {
+	bool expect(std::unordered_set<TokenType> tokenTypes) {
 		Token t;
 		return expect(tokenTypes, t);
 	}
-	bool expect(std::initializer_list<TokenType> tokenTypes, Token& matched) {
+	bool expect(std::unordered_set<TokenType> tokenTypes, Token& matched) {
 		if (accept(tokenTypes, matched))
 			return true;
 		error(string("Unexpected token type: ").append(enum_name(current.type)).c_str());
 	}
 
 public:
-	Parser(TokenIterator & tokenIterator) : it(tokenIterator), current(this->it.next()) {}
+	Parser(DentedTokenIterator & tokenIterator) : it(tokenIterator), current(this->it.next()) {}
 
 	CompilationUnit compilationUnit() {
 		CompilationUnit cu;
 
-		while (accept({ Newline }))
+		while (accept({ TokenType::Newline }))
 			;
 
 		Token matched;
-		while (accept({ Namespace })) {
-			expect({ Whitespace });
-			qualifiers.push(current.sv);
+		while (accept({ TokenType::Namespace })) {
+			expect({ TokenType::Whitespace });
+			namespaces.push(current.sv);
 		}
 
 		return cu;
@@ -104,63 +98,99 @@ public:
 //#undef IS
 };
 
+//struct Namespace {
+//	vector<Namespace> namespaces;
+//	vector<Type> types;
+//	vector<Function> functions;
+//};
+//struct Type {};
+//struct Function {};
+//
 //struct Expression : variant<
 //	unique_ptr<Expression>
 //> {};
 //
-//Expression parseTopLevel(TokenIterator& it);
-//Expression parseNamespace(TokenIterator& it);
-//Expression parseType(TokenIterator& it);
-//Expression parseFunction(TokenIterator& it);
+//typedef variant<
+//	Namespace,
+//	Type,
+//	Function,
+//	Expression
+//> TopLevel;
 //
-//Expression parseTopLevel(TokenIterator& it) {
+//TopLevel parseTopLevel(TokenIterator& it);
+//Namespace parseNamespace(TokenIterator& it);
+//Type parseType(TokenIterator& it);
+//Function parseFunction(TokenIterator& it);
+//
+//void throwUnexpected(Token const & token) {
+//	throw exception(string("Unexpected token type: `").append(enum_name(token.type)).c_str());
+//}
+//
+////void skipWhitespacesAndTabs(TokenIterator& it, Token& token) {
+////	while (token.type == TokenType::Whitespace | token.type == TokenType::Tab)
+////		token = it.next();
+////}
+//
+//void skip(TokenIterator & it, Token & token, unordered_set<TokenType> const & tokenTypesToSkip) {
+//	while (tokenTypesToSkip.contains(token.type))
+//		token = it.next();
+//}
+//
+//TopLevel parseTopLevel(TokenIterator& it) {
 //	for (;;) {
 //		auto const token = it.next();
 //		switch (token.type) {
-//			case Namespace: return parseNamespace(it);
-//			case Type: return parseType(it);
-//			case Func: return parseFunction(it);
-//			case Newline: continue;
-//			case Whitespace: continue;
-//			case Eof: return;
-//			default: throw exception(string("Unexpected token type: ").append(enum_name(token.type)).c_str());
+//			case TokenType::Namespace: return parseNamespace(it);
+//			case TokenType::Type: return parseType(it);
+//			case TokenType::Func: return parseFunction(it);
+//
+//			case TokenType::Newline: continue;
+//
+//			//case TokenType::Eof: return {};
+//			default: throwUnexpected(token);
 //		}
 //	}
 //}
 
-//Expression parseNamespace(TokenIterator& it) {
-//	auto const token = it.next();
+//Namespace parseNamespace(TokenIterator& it) {
+//	auto token = it.next();
+//	skip(it, token, { TokenType::Whitespace, TokenType::Tab });
+//	if (token.type != TokenType::Identifier)
+//		throwUnexpected(token);
+//	token = it.next();
+//	skip(it, token, { TokenType::Newline, TokenType::Tab });
 //	switch (token.type) {
-//		case LeftBrace: return parseNamespace(it);
+//		case TokenType::Type: 
 //	}
 //}
 
 int main() {
 	//string_view const sv("0xbeef\r\n43 0b0100_1011 func namespace someVariable <> 1..3 0b1.01011.1000010000\r\nif x is Int32 and x < 42\r\n\tsomeFunc()");
 	string_view const sv(R"cova(
-qual System
-	qual Empty
-	qual What
+namespace System
+	namespace Empty
+	namespace What
 		type Nick
 		type Strupat
-	qual Okay
+	namespace Okay
 		type More
 		type Types
 )cova");
 	cout << sv << endl << endl;
 
-	DentedTokenIterator<Newline, Tab, Indent, Dedent, Eof> it(sv);
-	for (auto token = it.next(); token.type != Eof; token = it.next()) {
+	DentedTokenIterator it(sv);
+	for (auto token = it.next(); token.type != TokenType::Eof; token = it.next()) {
 		auto const position = token.sv.data() - sv.data();
 		auto const length = token.sv.length();
 		auto const name = enum_name(token.type);
 		auto const text = token.sv.find_first_of('\n') == -1 ? token.sv : "";
-		//cout << position << "\t" << length << "\t" << "\t" << setw(30) << left << name << text << endl;
-		cout << (token.sv.length() == 0 ? enum_name(token.type) : token.sv);
+		cout << position << "\t" << length << "\t" << "\t" << setw(30) << left << name << text << endl;
+		//cout << (token.sv.length() == 0 ? enum_name(token.type) : token.sv);
 	}
 
-	/*Parser parser(it);
-	auto cu = parser.compilationUnit();*/
+	it = sv;
+	Parser parser(it);
+	auto cu = parser.compilationUnit();
 	/*for (auto token = parser.next(); token.type != Eof; token = it.next()) {
 		cout << (token.sv.data() - sv.data()) << "\t" << token.sv.length() << "\t" << "\t" << setw(30) << left << enum_name(token.type) << (token.sv.find_first_of('\n') == -1 ? token.sv : "") << endl;
 	}*/

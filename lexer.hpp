@@ -1,5 +1,5 @@
-#ifndef RE2C_LEXER_TESTING_LEXER_HPP
-#define RE2C_LEXER_TESTING_LEXER_HPP
+#ifndef RE2C_LEXER_TESTING__LEXER_HPP__INCLUDED
+#define RE2C_LEXER_TESTING__LEXER_HPP__INCLUDED
 
 #include <cstdint>
 #include <map>
@@ -11,7 +11,7 @@
 #define MAGIC_ENUM_RANGE_MAX 256
 #include "magic_enum.hpp"
 
-enum TokenType : std::uint8_t
+enum class TokenType : std::uint8_t
 {
 	BinaryRealHalfLiteral,
 	DecimalIntegerLiteral,
