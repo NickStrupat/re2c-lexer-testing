@@ -39,6 +39,11 @@ add_custom_command(
 #		PRE_BUILD
 #		COMMAND ${CMAKE_SOURCE_DIR}/tools/re2c/${re2cPath} --utf-8 --encoding-policy fail ${CMAKE_SOURCE_DIR}/unescape.re.cpp -o ${CMAKE_SOURCE_DIR}/unescape.cpp)
 
-add_executable(re2c_lexer_testing main.cpp lexer.cpp TokenIterator.cpp)# Utf8UnicodeEscapeSequenceIterator.cpp unescape.cpp)
+add_executable(re2c_lexer_testing
+	main.cpp
+	lexer.cpp
+	TokenIterator.cpp
+	DentedTokenIterator.cpp
+)
 
 target_link_libraries(re2c_lexer_testing unilib)
