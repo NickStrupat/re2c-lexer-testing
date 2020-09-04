@@ -1,4 +1,5 @@
 ﻿cmake_minimum_required(VERSION 3.10)
+
 project(re2c_lexer_testing)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -24,6 +25,10 @@ add_library(unilib STATIC
 	unilib/unilib/version.cpp
 )
 
+add_library(sqlite STATIC
+	sqlite-amalgamation-3330000/sqlite3.c
+)
+
 add_custom_command(
 		OUTPUT ${CMAKE_SOURCE_DIR}/lexer.cpp
 		PRE_BUILD
@@ -46,4 +51,4 @@ add_executable(re2c_lexer_testing
 	DentedTokenIterator.cpp
 )
 
-target_link_libraries(re2c_lexer_testing unilib)
+target_link_libraries(re2c_lexer_testing unilib sqlite)
