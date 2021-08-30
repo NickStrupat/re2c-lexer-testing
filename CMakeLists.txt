@@ -14,12 +14,12 @@ if (WIN32)
 	set(re2cPath "windows/re2c.exe")
 endif()
 
-set(sqlitePath "sqlite-amalgamation-3330000")
+set(sqliteDir "sqlite-amalgamation-3330000")
 
 include_directories(
 	unilib/unilib
 	sqlite_orm
-	${sqlitePath}
+	${sqliteDir}
 )
 
 add_library(unilib STATIC
@@ -32,7 +32,7 @@ add_library(unilib STATIC
 )
 
 add_library(sqlite STATIC
-	${sqlitePath}/sqlite3.c
+	${sqliteDir}/sqlite3.c
 )
 
 add_custom_command(
