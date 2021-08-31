@@ -6,20 +6,11 @@
 
 #include "Token.hpp"
 #include "TokenType.hpp"
+#include "Listener.hpp"
+#include "Model/Repository.hpp"
 
 template<typename TokenIterator>
 class Parser {
-	struct NamespaceNode {
-		std::string_view value;
-		NamespaceNode const * next;
-
-		NamespaceNode(NamespaceNode const &) = delete;
-		NamespaceNode(NamespaceNode &&) = delete;
-		NamespaceNode & operator=(NamespaceNode const &) = delete;
-		NamespaceNode & operator=(NamespaceNode &&) = delete;
-		void * operator new (std::size_t size) throw (std::bad_alloc) = delete;
-	};
-
 	struct UnexpectedTokenException : std::exception {
 		Token const token;
 		explicit UnexpectedTokenException(Token token) : token(token) {}
@@ -28,7 +19,7 @@ class Parser {
 
 	TokenIterator it;
 	Token current;
-	stack<Token> namespaceIdentifiers;
+	Repository repo;
 
 	void nextToken()                                            { current = it.next(); }
 	void unexpected() const                                     { throw UnexpectedTokenException(current); }
@@ -41,13 +32,13 @@ class Parser {
 	bool foundOne(TokenType tokenType) { return current.type == tokenType; }
 	//bool foundSeq(std::initializer_list<TokenType>)
 public:
-	explicit Parser(TokenIterator & tokenIterator) : it(tokenIterator), current(), namespaceIdentifiers() {}
+	explicit Parser(TokenIterator & tokenIterator, Repository & repo, Listener & listener) : it(tokenIterator), current(), repo(repo) {}
 
 	void parseNamespace() {
 		nextToken();
 		skipAllOfAny({ TokenType::Whitespace, TokenType::Tab });
 		while (foundOne(TokenType::Identifier)) {
-			namespaceIdentifiers.push(current);
+			listener.enterNamespace(current);
 			nextToken();
 			if (!foundOne(TokenType::Dot))
 				break;
@@ -55,7 +46,11 @@ public:
 		skipAll(TokenType::Newline);
 		skipAll(TokenType::Tab);
 		if (foundOne(TokenType::Indent)) {
-			parseNamespaceMember();
+			do {
+				parseNamespaceMember();
+				skipAll(TokenType::Newline);
+				skipAll(TokenType::Tab);
+			} while (foundOne(TokenType::Dent))
 			if (foundOne(TokenType::Dedent)) {
 
 			}
@@ -74,6 +69,7 @@ public:
 				case TokenType::Func: parseFunction(); break;
 				case TokenType::Newline: break;
 				case TokenType::Eof: return;
+				default: unexpected();
 			}
 		}
 	}

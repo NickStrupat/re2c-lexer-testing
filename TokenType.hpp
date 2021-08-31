@@ -1,6 +1,8 @@
 #pragma once
 
-enum class TokenType : std::uint8_t
+#include <cstdint>
+
+enum class TokenType : uint8_t
 {
 	BinaryRealHalfLiteral,
 	DecimalIntegerLiteral,
@@ -11,7 +13,9 @@ enum class TokenType : std::uint8_t
 	Newline,
 	Whitespace,
 	Tab,
+
 	Indent,
+	Dent,
 	Dedent,
 
 	Identifier,

@@ -9,6 +9,10 @@ Token DentedTokenIterator::getDentToken(std::string_view next) {
 		--currentDentLevel;
 		return { TokenType::Dedent, next };
 	}
+	else
+	{
+		return { TokenType::Dent, next };
+	}
 }
 
 DentedTokenIterator::DentedTokenIterator(std::string_view sv) : sv(sv), currentDentLevel(), newlineSinceLastNonTab(), tabCount() {}

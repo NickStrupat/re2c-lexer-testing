@@ -24,10 +24,11 @@
 	combiningCharacter = Mn | Mc;
 	decimalDigitCharacter = Nd;
 	connectingCharacter = Pc;
+	dashPunctuationCharacter = Pd;
 	formattingCharacter = Cf;
 
 	identifierStartCharacter = letterCharacter | "_";
-	identifierPartCharacter = letterCharacter | combiningCharacter | decimalDigitCharacter | connectingCharacter | formattingCharacter;
+	identifierPartCharacter = letterCharacter | combiningCharacter | decimalDigitCharacter | connectingCharacter | dashPunctuationCharacter | formattingCharacter;
 	identifier = identifierStartCharacter identifierPartCharacter*;
 
 	booleanLiteral = "true" | "false";
