@@ -1,17 +1,16 @@
 #include "DentedTokenIterator.hpp"
 
-Token DentedTokenIterator::getDentToken(std::string_view next) {
+Token DentedTokenIterator::getDentToken() {
 	if (tabCount > currentDentLevel) {
 		++currentDentLevel;
-		return { TokenType::Indent, next };
+		return { TokenType::Indent, { sv.data(), 0 } };
 	}
 	else if (tabCount < currentDentLevel) {
 		--currentDentLevel;
-		return { TokenType::Dedent, next };
+		return { TokenType::Dedent, { sv.data(), 0 } };
 	}
-	else
-	{
-		return { TokenType::Dent, next };
+	else {
+		return { TokenType::Dent, { sv.data(), 0 } };
 	}
 }
 
@@ -29,19 +28,20 @@ Token DentedTokenIterator::next() {
 				++tabCount;
 			break;
 		case TokenType::Eof:
-			if (tabCount != currentDentLevel)
-				return getDentToken({ sv.data(), 0 });
+			tabCount = 0;
+			if (currentDentLevel > 0) {
+				--currentDentLevel;
+				return { TokenType::Dedent, { sv.data(), 0 } };
+			}
 			break;
 		default:
 			if (newlineSinceLastNonTab) {
-				if (tabCount != 0) {
-					if (tabCount != currentDentLevel)
-						return getDentToken({ sv.data(), 0 });
-					else {
-						newlineSinceLastNonTab = false;
-						tabCount = 0;
-					}
+				auto dentToken = getDentToken();
+				if (tabCount == currentDentLevel) {
+					newlineSinceLastNonTab = false;
+					tabCount = 0;
 				}
+				return dentToken;
 			}
 			break;
 	}

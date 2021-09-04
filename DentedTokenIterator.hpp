@@ -13,7 +13,7 @@ class DentedTokenIterator {
 	bool newlineSinceLastNonTab;
 	uint64_t tabCount;
 
-	Token getDentToken(std::string_view next);
+	Token getDentToken();
 public:
 	DentedTokenIterator(std::string_view sv);
 	Token next();
