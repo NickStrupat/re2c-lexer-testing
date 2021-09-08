@@ -4,11 +4,11 @@
 
 template<typename TokenIterator>
 class LineAndColumnCountIterator {
-	TokenIterator it;
+	TokenIterator & it;
 	uint64_t _line;
 	uint64_t _column;
 public:
-	LineAndColumnCountIterator(TokenIterator it) : it(it), _line(1), _column(1) {}
+	LineAndColumnCountIterator(TokenIterator & it) : it(it), _line(1), _column(1) {}
 
 	uint64_t line() const { return _line; }
 	uint64_t column() const { return _column; }

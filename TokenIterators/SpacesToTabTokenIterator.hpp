@@ -54,9 +54,9 @@ template<typename TokenIterator, uint8_t MaxSpaceCount = 8>
 class SpacesToTabTokenIterator {
 	StaticCapacityQueue<Token, MaxSpaceCount> queue;
 	uint8_t _spacesCount;
-	TokenIterator it;
+	TokenIterator & it;
 public:
-	SpacesToTabTokenIterator(TokenIterator it, uint8_t spacesCount = 4) : queue(), _spacesCount(spacesCount), it(it) {}
+	SpacesToTabTokenIterator(TokenIterator & it, uint8_t spacesCount = 4) : queue(), _spacesCount(spacesCount), it(it) {}
 
 	uint8_t spacesCount() const { return _spacesCount; }
 	uint8_t spacesCount(uint8_t spacesCount) { _spacesCount = spacesCount; }
